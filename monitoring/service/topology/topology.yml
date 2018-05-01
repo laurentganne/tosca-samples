@@ -1,0 +1,158 @@
+tosca_definitions_version: alien_dsl_2_0_0
+
+metadata:
+  template_name: org.ystia.monitoring.service.topology.MonitoringService
+  template_version: 1.0.0
+  template_author: Ystia
+
+description: |
+  A Grafana front-end with a Graphite back-end for monitoring.
+  Tested on a Centos.
+
+imports:
+  - tosca-normative-types:1.0.0-ALIEN20
+  - yorc-docker-types:1.0.0
+  - yorc-kubernetes-types:1.0.0
+  - org.ystia.monitoring.service.types.impl.grafana:1.0.0
+
+topology_template:
+  node_templates:
+    Grafana:
+      type: org.ystia.monitoring.service.impl.Grafana
+      properties:
+        docker_ports: 3000
+      capabilities:
+        visualization:
+          properties:
+            docker_bridge_port_mapping: 3000
+            port: 3000
+  outputs:
+    Grafana_web_ui_url:
+      value: { get_attribute: [ Grafana, web_ui_url ] }
+  workflows:
+    install:
+      steps:
+        Grafana_initial:
+          target: Grafana
+          activities:
+            - set_state: initial
+          on_success:
+            - Grafana_creating
+        Grafana_creating:
+          target: Grafana
+          activities:
+            - set_state: creating
+          on_success:
+            - Grafana_created
+        Grafana_created:
+          target: Grafana
+          activities:
+            - set_state: created
+          on_success:
+            - Grafana_configuring
+        Grafana_configuring:
+          target: Grafana
+          activities:
+            - set_state: configuring
+          on_success:
+            - Grafana_configure
+        Grafana_configure:
+          target: Grafana
+          activities:
+            - call_operation: tosca.interfaces.node.lifecycle.Standard.configure
+          on_success:
+            - Grafana_configured
+        Grafana_configured:
+          target: Grafana
+          activities:
+            - set_state: configured
+          on_success:
+            - Grafana_starting
+        Grafana_starting:
+          target: Grafana
+          activities:
+            - set_state: starting
+          on_success:
+            - Grafana_start
+        Grafana_started:
+          target: Grafana
+          activities:
+            - set_state: started
+        Grafana_start:
+          target: Grafana
+          activities:
+            - call_operation: tosca.interfaces.node.lifecycle.Standard.start
+          on_success:
+            - Grafana_started
+    uninstall:
+      steps:
+        Grafana_stopping:
+          target: Grafana
+          activities:
+            - set_state: stopping
+          on_success:
+            - Grafana_stopped
+        Grafana_stop:
+          target: Grafana
+          activities:
+            - call_operation: tosca.interfaces.node.lifecycle.Standard.stop
+          on_success:
+            - Grafana_stopped
+        Grafana_stopped:
+          target: Grafana
+          activities:
+            - set_state: stopped
+          on_success:
+            - Grafana_deleting
+        Grafana_deleting:
+          target: Grafana
+          activities:
+            - set_state: deleting
+          on_success:
+            - Grafana_delete
+        Grafana_delete:
+          target: Grafana
+          activities:
+            - call_operation: tosca.interfaces.node.lifecycle.Standard.delete
+          on_success:
+            - Grafana_deleted
+        Grafana_deleted:
+          target: Grafana
+          activities:
+            - set_state: deleted
+    start:
+      steps:
+        Grafana_starting:
+          target: Grafana
+          activities:
+            - set_state: starting
+          on_success:
+            - Grafana_start
+        Grafana_started:
+          target: Grafana
+          activities:
+            - set_state: started
+        Grafana_start:
+          target: Grafana
+          activities:
+            - call_operation: tosca.interfaces.node.lifecycle.Standard.start
+          on_success:
+            - Grafana_started
+    stop:
+      steps:
+        Grafana_stopping:
+          target: Grafana
+          activities:
+            - set_state: stopping
+          on_success:
+            - Grafana_stop
+        Grafana_stop:
+          target: Grafana
+          activities:
+            - call_operation: tosca.interfaces.node.lifecycle.Standard.stop
+          on_success:
+            - Grafana_stopped
+        Grafana_stopped:
+          target: Grafana
+          activities:
+            - set_state: stopped
