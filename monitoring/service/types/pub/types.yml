@@ -30,19 +30,31 @@ node_types:
         type: org.ystia.monitoring.service.pub.DataCollectionEndpoint
         occurrences: [0, UNBOUNDED]
         description: Endpoint to collect data
-      visualization:
-        type: org.ystia.monitoring.service.pub.VisualisationEndpoint
+      http_endpoint:
+        type: org.ystia.monitoring.service.pub.HttpEndpoint
         occurrences: [0, UNBOUNDED]
         description: Endpoint to visualize collected data
 
 capability_types:
   org.ystia.monitoring.service.pub.DataCollectionEndpoint:
-    derived_from: tosca.capabilities.Endpoint
+    derived_from: tosca.capabilities.Endpoint.Public
     description: Store data Streaming
-  org.ystia.monitoring.service.pub.VisualisationEndpoint:
+    properties:
+      docker_bridge_port_mapping:
+        type: integer
+        description: Port used to bridge to the container's endpoint.
+        default: 2300
+      port:
+        type: integer
+        default: 2300
+    attributes:
+      kubernetes_port_mapping:
+        type: integer
+        description: Port exposed by Kubernetes to external clients.
+  org.ystia.monitoring.service.pub.HttpEndpoint:
     derived_from: tosca.capabilities.Endpoint.Public
     description: >
-      Visualization service capability endpoint
+      HTTP public endpoint
     properties:
       docker_bridge_port_mapping:
         type: integer

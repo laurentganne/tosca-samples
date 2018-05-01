@@ -13,7 +13,8 @@ imports:
   - tosca-normative-types:1.0.0-ALIEN20
   - yorc-docker-types:1.0.0
   - yorc-kubernetes-types:1.0.0
-  - org.ystia.monitoring.service.types.impl.grafana:1.0.0
+  - org.ystia.monitoring.service.types.impl.Graphite:1.0.0
+  - org.ystia.monitoring.service.types.impl.Grafana:1.0.0
 
 topology_template:
   node_templates:
@@ -22,16 +23,91 @@ topology_template:
       properties:
         docker_ports: 3000
       capabilities:
-        visualization:
+        http_endpoint:
           properties:
             docker_bridge_port_mapping: 3000
             port: 3000
+      requirements:
+        - grafanaConnectToGraphiteGraphiteHttp_endpoint:
+            type_requirement: graphite
+            node: Graphite
+            capability: org.ystia.monitoring.service.pub.HttpEndpoint
+            relationship: org.ystia.monitoring.relationships.GrafanaConnectToGraphite
+            properties:
+              datasource_name: "Graphite_DS"
+    Graphite:
+      type: org.ystia.monitoring.service.impl.Graphite
+      properties:
+        docker_ports: "8080 2003"
+      capabilities:
+        data_collection:
+          properties:
+            docker_bridge_port_mapping: 2003
+            port: 2003
+        http_endpoint:
+          properties:
+            docker_bridge_port_mapping: 8080
+            port: 8080
   outputs:
     Grafana_web_ui_url:
       value: { get_attribute: [ Grafana, web_ui_url ] }
   workflows:
     install:
       steps:
+        Graphite_initial:
+          target: Graphite
+          activities:
+            - set_state: initial
+          on_success:
+            - Graphite_creating
+        Graphite_creating:
+          target: Graphite
+          activities:
+            - set_state: creating
+          on_success:
+            - Graphite_created
+        Graphite_created:
+          target: Graphite
+          activities:
+            - set_state: created
+          on_success:
+            - Graphite_configuring
+        Graphite_configuring:
+          target: Graphite
+          activities:
+            - set_state: configuring
+          on_success:
+            - Graphite_configure
+        Graphite_configure:
+          target: Graphite
+          activities:
+            - call_operation: tosca.interfaces.node.lifecycle.Standard.configure
+          on_success:
+            - Graphite_configured
+        Graphite_configured:
+          target: Graphite
+          activities:
+            - set_state: configured
+          on_success:
+            - Graphite_starting
+        Graphite_starting:
+          target: Graphite
+          activities:
+            - set_state: starting
+          on_success:
+            - Graphite_start
+        Graphite_started:
+          target: Graphite
+          activities:
+            - set_state: started
+          on_success:
+            - Grafana_initial
+        Graphite_start:
+          target: Graphite
+          activities:
+            - call_operation: tosca.interfaces.node.lifecycle.Standard.start
+          on_success:
+            - Graphite_started
         Grafana_initial:
           target: Grafana
           activities:
@@ -120,8 +196,62 @@ topology_template:
           target: Grafana
           activities:
             - set_state: deleted
+          on_success:
+            - Graphite_stopping
+        Graphite_stopping:
+          target: Graphite
+          activities:
+            - set_state: stopping
+          on_success:
+            - Graphite_stopped
+        Graphite_stop:
+          target: Graphite
+          activities:
+            - call_operation: tosca.interfaces.node.lifecycle.Standard.stop
+          on_success:
+            - Graphite_stopped
+        Graphite_stopped:
+          target: Graphite
+          activities:
+            - set_state: stopped
+          on_success:
+            - Graphite_deleting
+        Graphite_deleting:
+          target: Graphite
+          activities:
+            - set_state: deleting
+          on_success:
+            - Graphite_delete
+        Graphite_delete:
+          target: Graphite
+          activities:
+            - call_operation: tosca.interfaces.node.lifecycle.Standard.delete
+          on_success:
+            - Graphite_deleted
+        Graphite_deleted:
+          target: Graphite
+          activities:
+            - set_state: deleted
     start:
       steps:
+        Graphite_starting:
+          target: Graphite
+          activities:
+            - set_state: starting
+          on_success:
+            - Graphite_start
+        Graphite_started:
+          target: Graphite
+          activities:
+            - set_state: started
+          on_success:
+            - Grafana_starting
+        Graphite_start:
+          target: Graphite
+          activities:
+            - call_operation: tosca.interfaces.node.lifecycle.Standard.start
+          on_success:
+            - Graphite_started
         Grafana_starting:
           target: Grafana
           activities:
@@ -154,5 +284,23 @@ topology_template:
             - Grafana_stopped
         Grafana_stopped:
           target: Grafana
+          activities:
+            - set_state: stopped
+          on_success:
+            - Graphite_stopping
+        Graphite_stopping:
+          target: Graphite
+          activities:
+            - set_state: stopping
+          on_success:
+            - Graphite_stop
+        Graphite_stop:
+          target: Graphite
+          activities:
+            - call_operation: tosca.interfaces.node.lifecycle.Standard.stop
+          on_success:
+            - Graphite_stopped
+        Graphite_stopped:
+          target: Graphite
           activities:
             - set_state: stopped
