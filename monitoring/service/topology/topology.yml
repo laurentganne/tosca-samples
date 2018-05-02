@@ -28,7 +28,7 @@ topology_template:
     node_type: org.ystia.monitoring.service.pub.MonitoringService
     capabilities:
       data_collection: [ Graphite, data_collection ]
-      data_collection: [ Grafana, http_endpoint ]
+      http_endpoint: [ Grafana, http_endpoint ]
   node_templates:
     Grafana:
       type: org.ystia.monitoring.service.impl.Grafana
