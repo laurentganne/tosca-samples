@@ -1,0 +1,133 @@
+tosca_definitions_version: alien_dsl_2_0_0
+
+metadata:
+  template_name: org.alien4cloud.diamond.agent_linux
+  template_version: 2.0.0
+  template_author: alien4cloud
+
+imports:
+  - tosca-normative-types:1.0.0-ALIEN20
+  - yorc-types:1.0.0
+  - org.ystia.monitoring.service.types.pub:1.0.0
+
+node_types:
+  org.alien4cloud.diamond.pub.nodes.DiamondAgent:
+    derived_from: tosca.nodes.SoftwareComponent
+    abstract: true
+    description: A Diamond Agent.
+    metadata:
+      icon: /images/diamond.png
+    capabilities:
+      collector_container:
+        type: org.alien4cloud.diamond.pub.capabilities.DiamondCollectorContainer
+        occurrences: [ 0, UNBOUNDED ]
+  org.alien4cloud.diamond.agent_linux.nodes.DiamondLinuxAgent:
+    description: |
+      Deploy a Diamond Agent on linux.
+    derived_from: org.alien4cloud.diamond.pub.nodes.DiamondAgent
+    properties:
+      # FIXME: find a way to get fro grafana endpoint
+      # we should do stuff with grafite & grafana in pre_configure_source and register the datasource_name
+      # then do stuff with collector in post_configure_source (and use the registered datasource_name)
+      datasource_name:
+        type: string
+        description: |
+          The datasource that connects grafana to graphite.
+          We need it to prepare grafana dashboards.
+        required: true
+        default: Graphite
+      collectors_path:
+        type: string
+        description: The path where the collector sources are (read only).
+        required: true
+        default: /opt/ansible_diamond/env/share/diamond/collectors
+      collectors_conf_path:
+        type: string
+        description: The path where the collector configuration are (read only).
+        required: true
+        default: /etc/ansible_diamond/collectors
+    attributes:
+      dashboard_dir: { get_operation_output: [ SELF, Standard, create, dashboard_dir ] }
+      grafana_url: { get_operation_output: [ SELF, Standard, configure, grafana_url ] }
+      grafana_user: { get_operation_output: [ SELF, Standard, configure, grafana_user ] }
+      grafana_password: { get_operation_output: [ SELF, Standard, configure, grafana_password ] }
+      grafana_dashboads_urls: { get_operation_output: [ SELF, Standard, start, grafana_dashboads_urls ] }
+    requirements:
+      - data_collection:
+          capability: org.ystia.monitoring.service.pub.DataCollectionEndpoint
+          relationship: org.alien4cloud.diamond.agent_linux.relationships.DiamondLinuxAgentConnectsToGraphite
+          occurrences: [0, 1]
+      - http_endpoint:
+          capability: org.ystia.monitoring.service.pub.HttpEndpoint
+          relationship: org.alien4cloud.diamond.agent_linux.relationships.DiamondLinuxAgentConnectsToGrafana
+          occurrences: [0, 1]
+    interfaces:
+      Standard:
+        create:
+          inputs:
+            ANSIBLE_VERBOSE: false
+            PLAYBOOK_ENTRY: create.yml
+            collectors_conf_path: { get_property: [SELF, collectors_conf_path] }
+          implementation: playbook/create.yml
+        configure:
+          inputs:
+            ANSIBLE_VERBOSE: false
+            PLAYBOOK_ENTRY: configure.yml
+            datasource_name: { get_property: [SELF, datasource_name] }
+          implementation: playbook/configure.yml
+        start:
+          inputs:
+            ANSIBLE_VERBOSE: false
+            PLAYBOOK_ENTRY: start.yml
+            dashboard_dir: { get_attribute: [ SELF, dashboard_dir ] }
+            grafana_url: { get_attribute: [ SELF, grafana_url ] }
+            grafana_user: { get_attribute: [ SELF, grafana_user ] }
+            grafana_password: { get_attribute: [ SELF, grafana_password ] }
+          implementation: playbook/start.yml
+        stop:
+          inputs:
+            ANSIBLE_VERBOSE: false
+            PLAYBOOK_ENTRY: stop.yml
+          implementation: playbook/stop.yml
+        delete:
+          inputs:
+            ANSIBLE_VERBOSE: false
+            PLAYBOOK_ENTRY: delete.yml
+            dashboard_dir: { get_attribute: [ SELF, dashboard_dir ] }
+            grafana_url: { get_attribute: [ SELF, grafana_url ] }
+            grafana_user: { get_attribute: [ SELF, grafana_user ] }
+            grafana_password: { get_attribute: [ SELF, grafana_password ] }
+          implementation: playbook/delete.yml
+
+capability_types:
+  org.alien4cloud.diamond.pub.capabilities.DiamondCollectorContainer:
+    derived_from: tosca.capabilities.Container
+relationship_types:
+  org.alien4cloud.diamond.pub.relationships.DiamondCollectorHostedOnAgent:
+    derived_from: tosca.relationships.HostedOn
+  org.alien4cloud.diamond.agent_linux.relationships.DiamondLinuxAgentConnectsToGraphite:
+    derived_from: tosca.relationships.ConnectsTo
+    valid_target_types: [ org.ystia.monitoring.service.pub.DataCollectionEndpoint ]
+    interfaces:
+      Configure:
+        pre_configure_source:
+          inputs:
+            ANSIBLE_VERBOSE: false
+            PLAYBOOK_ENTRY: connects_to_graphite.yml
+            graphite_host: { get_attribute: [TARGET, data_endpoint, ip_address] }
+            graphite_port: { get_attribute: [TARGET, data_endpoint, kubernetes_port_mapping]}
+          implementation: playbook/connects_to_graphite.yml
+  org.alien4cloud.diamond.agent_linux.relationships.DiamondLinuxAgentConnectsToGrafana:
+    derived_from: tosca.relationships.ConnectsTo
+    valid_target_types: [ org.ystia.monitoring.service.pub.HttpEndpoint ]
+    interfaces:
+      Configure:
+        pre_configure_source:
+          inputs:
+            ANSIBLE_VERBOSE: false
+            PLAYBOOK_ENTRY: connects_to_grafana.yml
+            grafana_url: { concat: [ get_attribute: [TARGET, http_endpoint, protocol], "://", get_attribute: [TARGET, http_endpoint, ip_address], ":", get_attribute: [TARGET, http_endpoint, kubernetes_port_mapping]] }
+            grafana_user: admin
+            grafana_password: admin
+          implementation: playbook/connects_to_grafana.yml
+

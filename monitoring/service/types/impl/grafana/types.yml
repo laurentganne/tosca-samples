@@ -25,6 +25,8 @@ node_types:
       icon: /images/grafana.png
     attributes:
       web_ui_url: { concat: ["http://", get_attribute: [ SELF, http_endpoint, ip_address ], ":", get_attribute: [ SELF, http_endpoint, kubernetes_port_mapping ]]}
+      # workaround
+#      graphite_attr_url: { get_attribute: [ REQ_TARGET, graphite, web_ui_url ] }
     requirements:
       - graphite:
           capability: org.ystia.monitoring.service.pub.HttpEndpoint
@@ -33,8 +35,10 @@ node_types:
     interfaces:
       Standard:
         start:
+          inputs:
+            GRAPHITE_URL: { get_attribute: [REQ_TARGET, graphite, web_ui_url] }
           implementation:
-            file: grafana/grafana
+            file: laurentg/grafana
             repository: docker
             type: tosca.artifacts.Deployment.Image.Container.Docker
 
@@ -47,16 +51,3 @@ relationship_types:
         required: true
         default: Graphite_DS
     valid_target_types: [ org.ystia.monitoring.service.pub.HttpEndpoint ]
-    interfaces:
-      Configure:
-        add_target:
-          inputs:
-            graphite_host: { get_attribute: [TARGET, http_endpoint, ip_address] }
-            graphite_port: { get_property: [TARGET, http_endpoint, port]}
-            grafana_port: { get_property: [SOURCE, http_endpoint, port]}
-            datasource_name: { get_property: [SELF, datasource_name]}
-          implementation: scripts/connect-graphana_to_graphite.sh
-    artifacts:
-      - scripts:
-          type: tosca.artifacts.File
-          file: scripts

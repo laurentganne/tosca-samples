@@ -1,0 +1,74 @@
+tosca_definitions_version: alien_dsl_2_0_0
+
+metadata:
+  template_name: org.alien4cloud.monitoring.topologies.MonitoredCentos
+  template_version: 2.0.0
+  template_author: alien4cloud
+
+description: |
+  Monitored compute (centos).
+
+imports:
+  - tosca-normative-types:1.0.0-ALIEN20
+  - org.alien4cloud.diamond.agent_linux:2.0.0
+  - org.ystia.monitoring.service.types.pub:1.0.0
+
+topology_template:
+  description: |
+    Monitored compute (centos).
+
+  node_templates:
+    DiamondLinuxAgent:
+      type: org.alien4cloud.diamond.agent_linux.nodes.DiamondLinuxAgent
+      properties:
+        datasource_name: "Graphite"
+        collectors_path: "/opt/ansible_diamond/env/share/diamond/collectors"
+        collectors_conf_path: "/etc/ansible_diamond/collectors"
+      requirements:
+        - host:
+            node: MonitoredCentosMedium
+            capability: tosca.capabilities.Container
+            relationship: tosca.relationships.HostedOn
+        - data_collection:
+            node: ServiceBackEnd
+            capability: org.ystia.monitoring.service.pub.DataCollectionEndpoint
+            relationship: org.alien4cloud.diamond.agent_linux.relationships.DiamondLinuxAgentConnectsToGraphite
+        - http_endpoint:
+            node: ServiceFrontEnd
+            capability: org.ystia.monitoring.service.pub.HttpEndpoint
+            relationship: org.alien4cloud.diamond.agent_linux.relationships.DiamondLinuxAgentConnectsToGrafana
+    ServiceBackEnd:
+      type: org.ystia.monitoring.service.pub.MonitoringService
+      capabilities:
+        data_collection:
+          properties:
+            protocol: tcp
+    ServiceFrontEnd:
+      type: org.ystia.monitoring.service.pub.MonitoringService
+      capabilities:
+        http_endpoint:
+          properties:
+            protocol: http
+    MonitoredCentosMedium:
+      type: tosca.nodes.Compute
+#      capabilities:
+#        host:
+#          properties:
+#            num_cpus: 1
+#            mem_size: "2 GIB"
+#        os:
+#          properties:
+#            architecture: "x86_64"
+#            type: linux
+#            distribution: centos
+#        scalable:
+#          properties:
+#            min_instances: 1
+#            max_instances: 1
+#            default_instances: 1
+#        endpoint:
+#          properties:
+#            secure: true
+#            protocol: tcp
+#            network_name: PRIVATE
+#            initiator: source
