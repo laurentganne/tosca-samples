@@ -25,32 +25,21 @@ node_types:
         description: >
           Service Web UI URL
         type: string
+      data_collection_ip_address:
+        description: >
+          IP address to which clients can send their metrics
+        type: string
+      data_collection_port:
+        description: >
+          Port to be used by clients sending their metrics
+        type: integer
     capabilities:
-      data_collection:
-        type: org.ystia.monitoring.service.pub.DataCollectionEndpoint
-        occurrences: [0, UNBOUNDED]
-        description: Endpoint to collect data
       http_endpoint:
         type: org.ystia.monitoring.service.pub.HttpEndpoint
         occurrences: [0, UNBOUNDED]
         description: Endpoint to visualize collected data
 
 capability_types:
-  org.ystia.monitoring.service.pub.DataCollectionEndpoint:
-    derived_from: tosca.capabilities.Endpoint.Public
-    description: Store data Streaming
-    properties:
-      docker_bridge_port_mapping:
-        type: integer
-        description: Port used to bridge to the container's endpoint.
-        default: 2300
-      port:
-        type: integer
-        default: 2300
-    attributes:
-      port:
-        type: integer
-        description: Port exposed to external clients.
   org.ystia.monitoring.service.pub.HttpEndpoint:
     derived_from: tosca.capabilities.Endpoint.Public
     description: >

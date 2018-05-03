@@ -27,7 +27,6 @@ topology_template:
   substitution_mappings:
     node_type: org.ystia.monitoring.service.pub.MonitoringService
     capabilities:
-      data_collection: [ Graphite, data_collection ]
       http_endpoint: [ Grafana, http_endpoint ]
   node_templates:
     Grafana:
@@ -63,6 +62,10 @@ topology_template:
   outputs:
     Grafana_web_ui_url:
       value: { get_attribute: [ Grafana, web_ui_url ] }
+    Graphite_ip_address:
+      value: { get_attribute: [ Grafana, data_collection_ip_address ] }
+    Graphite_port:
+      value: { get_attribute: [ Grafana, data_collection_port ] }
   workflows:
     install:
       steps:

@@ -29,21 +29,11 @@ topology_template:
             node: MonitoredCentosMedium
             capability: tosca.capabilities.Container
             relationship: tosca.relationships.HostedOn
-        - data_collection:
-            node: ServiceBackEnd
-            capability: org.ystia.monitoring.service.pub.DataCollectionEndpoint
-            relationship: org.alien4cloud.diamond.agent_linux.relationships.DiamondLinuxAgentConnectsToGraphite
         - http_endpoint:
-            node: ServiceFrontEnd
+            node: MonitoringService
             capability: org.ystia.monitoring.service.pub.HttpEndpoint
             relationship: org.alien4cloud.diamond.agent_linux.relationships.DiamondLinuxAgentConnectsToGrafana
-    ServiceBackEnd:
-      type: org.ystia.monitoring.service.pub.MonitoringService
-      capabilities:
-        data_collection:
-          properties:
-            protocol: tcp
-    ServiceFrontEnd:
+    MonitoringService:
       type: org.ystia.monitoring.service.pub.MonitoringService
       capabilities:
         http_endpoint:

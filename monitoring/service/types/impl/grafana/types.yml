@@ -25,8 +25,8 @@ node_types:
       icon: /images/grafana.png
     attributes:
       web_ui_url: { concat: ["http://", get_attribute: [ SELF, http_endpoint, ip_address ], ":", get_attribute: [ SELF, http_endpoint, port ]]}
-      # workaround
-#      graphite_attr_url: { get_attribute: [ REQ_TARGET, graphite, web_ui_url ] }
+      data_collection_ip_address: { get_attribute: [ REQ_TARGET, graphite, data_collection_ip_address ] }
+      data_collection_port: { get_attribute: [ REQ_TARGET, graphite, data_collection_port ] }
     requirements:
       - graphite:
           capability: org.ystia.monitoring.service.pub.HttpEndpoint
