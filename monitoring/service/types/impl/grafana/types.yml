@@ -24,7 +24,7 @@ node_types:
     metadata:
       icon: /images/grafana.png
     attributes:
-      web_ui_url: { concat: ["http://", get_attribute: [ SELF, http_endpoint, ip_address ], ":", get_attribute: [ SELF, http_endpoint, kubernetes_port_mapping ]]}
+      web_ui_url: { concat: ["http://", get_attribute: [ SELF, http_endpoint, ip_address ], ":", get_attribute: [ SELF, http_endpoint, port ]]}
       # workaround
 #      graphite_attr_url: { get_attribute: [ REQ_TARGET, graphite, web_ui_url ] }
     requirements:

@@ -115,7 +115,7 @@ relationship_types:
             ANSIBLE_VERBOSE: false
             PLAYBOOK_ENTRY: connects_to_graphite.yml
             graphite_host: { get_attribute: [TARGET, data_endpoint, ip_address] }
-            graphite_port: { get_attribute: [TARGET, data_endpoint, kubernetes_port_mapping]}
+            graphite_port: { get_attribute: [TARGET, data_endpoint, port]}
           implementation: playbook/connects_to_graphite.yml
   org.alien4cloud.diamond.agent_linux.relationships.DiamondLinuxAgentConnectsToGrafana:
     derived_from: tosca.relationships.ConnectsTo
@@ -126,7 +126,7 @@ relationship_types:
           inputs:
             ANSIBLE_VERBOSE: false
             PLAYBOOK_ENTRY: connects_to_grafana.yml
-            grafana_url: { concat: [ get_attribute: [TARGET, http_endpoint, protocol], "://", get_attribute: [TARGET, http_endpoint, ip_address], ":", get_attribute: [TARGET, http_endpoint, kubernetes_port_mapping]] }
+            grafana_url: { concat: [ get_attribute: [TARGET, http_endpoint, protocol], "://", get_attribute: [TARGET, http_endpoint, ip_address], ":", get_attribute: [TARGET, http_endpoint, port]] }
             grafana_user: admin
             grafana_password: admin
           implementation: playbook/connects_to_grafana.yml

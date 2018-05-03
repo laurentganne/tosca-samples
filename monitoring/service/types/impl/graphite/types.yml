@@ -24,7 +24,7 @@ node_types:
     metadata:
       icon: /images/graphite.png
     attributes:
-      web_ui_url: { concat: ["http://", get_attribute: [ SELF, http_endpoint, ip_address ], ":", get_attribute: [ SELF, http_endpoint, kubernetes_port_mapping ]]}
+      web_ui_url: { concat: ["http://", get_attribute: [ SELF, http_endpoint, ip_address ], ":", get_attribute: [ SELF, http_endpoint, port ]]}
     interfaces:
       Standard:
         start:
