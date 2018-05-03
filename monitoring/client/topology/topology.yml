@@ -32,7 +32,7 @@ topology_template:
         - http_endpoint:
             node: MonitoringService
             capability: org.ystia.monitoring.service.pub.HttpEndpoint
-            relationship: org.alien4cloud.diamond.agent_linux.relationships.DiamondLinuxAgentConnectsToGrafana
+            relationship: org.alien4cloud.diamond.agent_linux.relationships.DiamondLinuxAgentConnectsToService
     MonitoringService:
       type: org.ystia.monitoring.service.pub.MonitoringService
       capabilities:
@@ -41,24 +41,15 @@ topology_template:
             protocol: http
     MonitoredCentosMedium:
       type: tosca.nodes.Compute
-#      capabilities:
-#        host:
-#          properties:
-#            num_cpus: 1
-#            mem_size: "2 GIB"
-#        os:
-#          properties:
-#            architecture: "x86_64"
-#            type: linux
-#            distribution: centos
-#        scalable:
-#          properties:
-#            min_instances: 1
-#            max_instances: 1
-#            default_instances: 1
-#        endpoint:
-#          properties:
-#            secure: true
-#            protocol: tcp
-#            network_name: PRIVATE
-#            initiator: source
+      capabilities:
+        scalable:
+          properties:
+            min_instances: 1
+            max_instances: 1
+            default_instances: 1
+        endpoint:
+          properties:
+            secure: true
+            protocol: tcp
+            network_name: PRIVATE
+            initiator: source

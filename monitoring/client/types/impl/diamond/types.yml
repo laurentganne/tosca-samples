@@ -53,13 +53,9 @@ node_types:
       grafana_password: { get_operation_output: [ SELF, Standard, configure, grafana_password ] }
       grafana_dashboads_urls: { get_operation_output: [ SELF, Standard, start, grafana_dashboads_urls ] }
     requirements:
-      - data_collection:
-          capability: org.ystia.monitoring.service.pub.DataCollectionEndpoint
-          relationship: org.alien4cloud.diamond.agent_linux.relationships.DiamondLinuxAgentConnectsToGraphite
-          occurrences: [0, 1]
       - http_endpoint:
           capability: org.ystia.monitoring.service.pub.HttpEndpoint
-          relationship: org.alien4cloud.diamond.agent_linux.relationships.DiamondLinuxAgentConnectsToGrafana
+          relationship: org.alien4cloud.diamond.agent_linux.relationships.DiamondLinuxAgentConnectsToService
           occurrences: [0, 1]
     interfaces:
       Standard:
@@ -105,19 +101,7 @@ capability_types:
 relationship_types:
   org.alien4cloud.diamond.pub.relationships.DiamondCollectorHostedOnAgent:
     derived_from: tosca.relationships.HostedOn
-  org.alien4cloud.diamond.agent_linux.relationships.DiamondLinuxAgentConnectsToGraphite:
-    derived_from: tosca.relationships.ConnectsTo
-    valid_target_types: [ org.ystia.monitoring.service.pub.DataCollectionEndpoint ]
-    interfaces:
-      Configure:
-        pre_configure_source:
-          inputs:
-            ANSIBLE_VERBOSE: false
-            PLAYBOOK_ENTRY: connects_to_graphite.yml
-            graphite_host: { get_attribute: [TARGET, data_endpoint, ip_address] }
-            graphite_port: { get_attribute: [TARGET, data_endpoint, port]}
-          implementation: playbook/connects_to_graphite.yml
-  org.alien4cloud.diamond.agent_linux.relationships.DiamondLinuxAgentConnectsToGrafana:
+  org.alien4cloud.diamond.agent_linux.relationships.DiamondLinuxAgentConnectsToService:
     derived_from: tosca.relationships.ConnectsTo
     valid_target_types: [ org.ystia.monitoring.service.pub.HttpEndpoint ]
     interfaces:
@@ -125,9 +109,11 @@ relationship_types:
         pre_configure_source:
           inputs:
             ANSIBLE_VERBOSE: false
-            PLAYBOOK_ENTRY: connects_to_grafana.yml
+            PLAYBOOK_ENTRY: connects_to_service.yml
             grafana_url: { concat: [ get_attribute: [TARGET, http_endpoint, protocol], "://", get_attribute: [TARGET, http_endpoint, ip_address], ":", get_attribute: [TARGET, http_endpoint, port]] }
             grafana_user: admin
             grafana_password: admin
-          implementation: playbook/connects_to_grafana.yml
+            graphite_host: { get_attribute: [TARGET, data_collection_ip_address] }
+            graphite_port: { get_attribute: [TARGET, data_collection_port]}
+          implementation: playbook/connects_to_service.yml
 

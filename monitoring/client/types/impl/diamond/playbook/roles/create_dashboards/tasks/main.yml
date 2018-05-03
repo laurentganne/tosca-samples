@@ -37,14 +37,19 @@
     return_content: yes
     status_code: 200
   ignore_errors: yes
+  environment:
+    no_proxy: "{{ grafana_url.rpartition('//')[2].split(':')[0] }}"
+    http_proxy: ""
+    https_proxy: ""
   register: result
   with_items: "{{dashboards_slurped.results}}"
   when: grafana_url is defined
 
-# - debug:
+- debug:
+    msg: "Grafana IP address is {{ grafana_url.rpartition('//')[2].split(':')[0] }}, Result is : {{result.results}}"
 #     msg: "Grafana slug is : {{ item['json']['slug'] }}"
 #   with_items: "{{result.results}}"
-#   when: result is defined
+#    when: result is defined
 - set_fact:
     slugIds: []
 

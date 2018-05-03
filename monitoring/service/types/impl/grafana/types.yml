@@ -37,6 +37,7 @@ node_types:
         start:
           inputs:
             GRAPHITE_URL: { get_attribute: [REQ_TARGET, graphite, web_ui_url] }
+            GF_AUTH_ANONYMOUS_ENABLED: true
           implementation:
             file: laurentg/grafana
             repository: docker

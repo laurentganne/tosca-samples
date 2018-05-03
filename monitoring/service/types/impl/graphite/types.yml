@@ -38,7 +38,6 @@ node_types:
           Port to be used by clients sending their metrics
         type: integer
     capabilities:
-    capabilities:
       data_collection:
         type: org.ystia.monitoring.service.impl.DataCollectionEndpoint
         occurrences: [0, UNBOUNDED]
@@ -59,7 +58,7 @@ node_types:
       Standard:
         start:
           implementation:
-            file: sitespeedio/graphite
+            file: sitespeedio/graphite:1.0.2-2-b
             repository: docker
             type: tosca.artifacts.Deployment.Image.Container.Docker
 
