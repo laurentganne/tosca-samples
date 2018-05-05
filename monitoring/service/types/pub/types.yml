@@ -25,14 +25,6 @@ node_types:
         description: >
           Service Web UI URL
         type: string
-      data_collection_ip_address:
-        description: >
-          IP address to which clients can send their metrics
-        type: string
-      data_collection_port:
-        description: >
-          Port to be used by clients sending their metrics
-        type: integer
     capabilities:
       http_endpoint:
         type: org.ystia.monitoring.service.pub.HttpEndpoint
