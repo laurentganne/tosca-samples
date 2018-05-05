@@ -48,14 +48,6 @@ capability_types:
     derived_from: tosca.capabilities.Endpoint.Public
     description: >
       HTTP public endpoint
-    properties:
-      docker_bridge_port_mapping:
-        type: integer
-        description: Port used to bridge to the container's endpoint.
-        default: 3000
-      port:
-        type: integer
-        default: 3000
     attributes:
       port:
         type: integer
@@ -63,14 +55,6 @@ capability_types:
   org.ystia.monitoring.service.pub.DataCollectionEndpoint:
     derived_from: tosca.capabilities.Endpoint.Public
     description: Store data Streaming
-    properties:
-      docker_bridge_port_mapping:
-        type: integer
-        description: Port used to bridge to the container's endpoint.
-        default: 2003
-      port:
-        type: integer
-        default: 2003
     attributes:
       port:
         type: integer

@@ -25,8 +25,15 @@ node_types:
       icon: /images/graphite.png
     attributes:
       web_ui_url: { concat: ["http://", get_attribute: [ SELF, http_endpoint, ip_address ], ":", get_attribute: [ SELF, http_endpoint, port ]]}
-      data_collection_ip_address: { get_attribute: [ SELF, data_collection, ip_address ] }
-      data_collection_port: { get_attribute: [ SELF, data_collection, port ] }
+#      data_collection_ip_address: { get_attribute: [ SELF, data_collection, ip_address ] }
+#      data_collection_port: { get_attribute: [ SELF, data_collection, port ] }
+    capabilities:
+      http_endpoint:
+        type: org.ystia.monitoring.service.impl.GraphiteHttpEndpoint
+        description: Endpoint to Graphite Web UI
+      data_collection:
+        type: org.ystia.monitoring.service.impl.GraphiteDataCollectionEndpoint
+        description: Endpoint to collect data
     interfaces:
       Standard:
         start:
@@ -34,3 +41,26 @@ node_types:
             file: sitespeedio/graphite:1.0.2-2-b
             repository: docker
             type: tosca.artifacts.Deployment.Image.Container.Docker
+capability_types:
+  org.ystia.monitoring.service.impl.GraphiteHttpEndpoint:
+    derived_from: org.ystia.monitoring.service.pub.HttpEndpoint
+    properties:
+      docker_bridge_port_mapping:
+        type: integer
+        description: Port used to bridge to the container's endpoint.
+        default: 8080
+      port:
+        type: integer
+        default: 80
+    # Attribute port inherited from parent type
+  org.ystia.monitoring.service.impl.GraphiteDataCollectionEndpoint:
+    derived_from: org.ystia.monitoring.service.pub.DataCollectionEndpoint
+    properties:
+      docker_bridge_port_mapping:
+        type: integer
+        description: Port used to bridge to the container's endpoint.
+        default: 2003
+      port:
+        type: integer
+        default: 2003
+    # Attribute port inherited from parent type
