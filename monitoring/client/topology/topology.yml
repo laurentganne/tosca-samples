@@ -32,13 +32,20 @@ topology_template:
         - http_endpoint:
             node: MonitoringService
             capability: org.ystia.monitoring.service.pub.HttpEndpoint
-            relationship: org.alien4cloud.diamond.agent_linux.relationships.DiamondLinuxAgentConnectsToService
+            relationship: org.alien4cloud.diamond.agent_linux.relationships.DiamondLinuxAgentConnectsToFrontEnd
+        - data_collection:
+            node: MonitoringService
+            capability: org.ystia.monitoring.service.pub.DataCollectionEndpoint
+            relationship: org.alien4cloud.diamond.agent_linux.relationships.DiamondLinuxAgentConnectsToBackEnd
     MonitoringService:
       type: org.ystia.monitoring.service.pub.MonitoringService
       capabilities:
         http_endpoint:
           properties:
             protocol: http
+        data_collection:
+          properties:
+            protocol: tcp
     MonitoredCentosMedium:
       type: tosca.nodes.Compute
       capabilities:
