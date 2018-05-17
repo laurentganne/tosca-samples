@@ -25,8 +25,12 @@ node_types:
       icon: /images/grafana.png
     attributes:
       web_ui_url: { concat: ["http://", get_attribute: [ SELF, http_endpoint, ip_address ], ":", get_attribute: [ SELF, http_endpoint, port ]]}
-      data_collection_ip_address: { get_attribute: [ REQ_TARGET, graphite, data_collection_ip_address ] }
-      data_collection_port: { get_attribute: [ REQ_TARGET, graphite, data_collection_port ] }
+#      data_collection_ip_address: { get_attribute: [ REQ_TARGET, graphite, data_collection_ip_address ] }
+#      data_collection_port: { get_attribute: [ REQ_TARGET, graphite, data_collection_port ] }
+    capabilities:
+      http_endpoint:
+        type: org.ystia.monitoring.service.impl.GrafanaEndpoint
+        description: Endpoint to visualize collected data
     requirements:
       - graphite:
           capability: org.ystia.monitoring.service.pub.HttpEndpoint
@@ -43,6 +47,18 @@ node_types:
             repository: docker
             type: tosca.artifacts.Deployment.Image.Container.Docker
 
+capability_types:
+  org.ystia.monitoring.service.impl.GrafanaEndpoint:
+    derived_from: org.ystia.monitoring.service.pub.HttpEndpoint
+    properties:
+      docker_bridge_port_mapping:
+        type: integer
+        description: Port used to bridge to the container's endpoint.
+        default: 3000
+      port:
+        type: integer
+        default: 3000
+    # Attribute port inherited from the parent type
 relationship_types:
   org.ystia.monitoring.relationships.GrafanaConnectToGraphite:
     derived_from: tosca.relationships.ConnectsTo

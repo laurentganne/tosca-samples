@@ -26,9 +26,6 @@ node_types:
       Deploy a Diamond Agent on linux.
     derived_from: org.alien4cloud.diamond.pub.nodes.DiamondAgent
     properties:
-      # FIXME: find a way to get fro grafana endpoint
-      # we should do stuff with grafite & grafana in pre_configure_source and register the datasource_name
-      # then do stuff with collector in post_configure_source (and use the registered datasource_name)
       datasource_name:
         type: string
         description: |
@@ -55,7 +52,11 @@ node_types:
     requirements:
       - http_endpoint:
           capability: org.ystia.monitoring.service.pub.HttpEndpoint
-          relationship: org.alien4cloud.diamond.agent_linux.relationships.DiamondLinuxAgentConnectsToService
+          relationship: org.alien4cloud.diamond.agent_linux.relationships.DiamondLinuxAgentConnectsToFrontEnd
+          occurrences: [0, 1]
+      - data_collection:
+          capability: org.ystia.monitoring.service.pub.DataCollectionEndpoint
+          relationship: org.alien4cloud.diamond.agent_linux.relationships.DiamondLinuxAgentConnectsToBackEnd
           occurrences: [0, 1]
     interfaces:
       Standard:
@@ -88,7 +89,6 @@ node_types:
         delete:
           inputs:
             ANSIBLE_VERBOSE: false
-            PLAYBOOK_ENTRY: delete.yml
             dashboard_dir: { get_attribute: [ SELF, dashboard_dir ] }
             grafana_url: { get_attribute: [ SELF, grafana_url ] }
             grafana_user: { get_attribute: [ SELF, grafana_user ] }
@@ -101,7 +101,7 @@ capability_types:
 relationship_types:
   org.alien4cloud.diamond.pub.relationships.DiamondCollectorHostedOnAgent:
     derived_from: tosca.relationships.HostedOn
-  org.alien4cloud.diamond.agent_linux.relationships.DiamondLinuxAgentConnectsToService:
+  org.alien4cloud.diamond.agent_linux.relationships.DiamondLinuxAgentConnectsToFrontEnd:
     derived_from: tosca.relationships.ConnectsTo
     valid_target_types: [ org.ystia.monitoring.service.pub.HttpEndpoint ]
     interfaces:
@@ -109,11 +109,20 @@ relationship_types:
         pre_configure_source:
           inputs:
             ANSIBLE_VERBOSE: false
-            PLAYBOOK_ENTRY: connects_to_service.yml
             grafana_url: { concat: [ get_attribute: [TARGET, http_endpoint, protocol], "://", get_attribute: [TARGET, http_endpoint, ip_address], ":", get_attribute: [TARGET, http_endpoint, port]] }
             grafana_user: admin
             grafana_password: admin
-            graphite_host: { get_attribute: [TARGET, data_collection_ip_address] }
-            graphite_port: { get_attribute: [TARGET, data_collection_port]}
-          implementation: playbook/connects_to_service.yml
+          implementation: playbook/connects_to_grafana.yml
+  org.alien4cloud.diamond.agent_linux.relationships.DiamondLinuxAgentConnectsToBackEnd:
+    derived_from: tosca.relationships.ConnectsTo
+    valid_target_types: [ org.ystia.monitoring.service.pub.DataCollectionEndpoint ]
+    interfaces:
+      Configure:
+        pre_configure_source:
+          inputs:
+            ANSIBLE_VERBOSE: false
+            graphite_host: { get_attribute: [TARGET, data_collection, ip_address] }
+            graphite_port: { get_attribute: [TARGET, data_collection, port] }
+          implementation: playbook/connects_to_graphite.yml
+
 

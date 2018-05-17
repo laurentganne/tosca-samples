@@ -18,16 +18,17 @@ imports:
 
 topology_template:
   # Client applications can reference:
-  # - the capability data_collection exposed as a substitution mapping,
-  #   to send data to the Monitoring Service
   # - the capability http_endpoint exposed as a substitution mapping,
-  #   to onnect to the Grafana Web UI and add a dashboard
+  #   to connect to the Grafana Web UI and add a dashboard
+  # - the capability data_collection exposed as a substitution mapping,
+  #   to send data to Graphite
   # - the output attribute web_ui_url referenced in the output section below
-  #   to connect to the GRafana Web UI and add a dashboard
+  #   to connect to the Grafana Web UI and add a dashboard
   substitution_mappings:
     node_type: org.ystia.monitoring.service.pub.MonitoringService
     capabilities:
       http_endpoint: [ Grafana, http_endpoint ]
+      data_collection: [ Graphite, data_collection ]
   node_templates:
     Grafana:
       type: org.ystia.monitoring.service.impl.Grafana
@@ -62,10 +63,6 @@ topology_template:
   outputs:
     Grafana_web_ui_url:
       value: { get_attribute: [ Grafana, web_ui_url ] }
-    Graphite_ip_address:
-      value: { get_attribute: [ Grafana, data_collection_ip_address ] }
-    Graphite_port:
-      value: { get_attribute: [ Grafana, data_collection_port ] }
   workflows:
     install:
       steps:
