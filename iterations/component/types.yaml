@@ -57,6 +57,37 @@ node_types:
             ITERATIONS: { get_property: [SELF, numberOfIterations] }
             PAUSE_DURATION: { get_property: [SELF, pauseDuration] }
           implementation: scripts/iterate.sh
+  org.ystia.yorc.samples.tests.BashIterationHostOperation:
+    description: |
+      This component iterates on printing a message n times, sleeping a given
+      number of seconds between each iteration. Can be run as a Host Operation
+    derived_from: tosca.nodes.Root
+    properties:
+      messageToPrint:
+        description: "Message to print on each iteration"
+        type: string
+        default: "Message"
+      numberOfIterations:
+        description: "Number of iterations to perform"
+        type: integer
+        default: 10
+      pauseDuration:
+        description: "Duration in seconds of the pause after each iteration"
+        type: integer
+        default: 1
+    interfaces:
+      Standard:
+        create:
+          inputs:
+            ITERATIONS: { get_property: [SELF, numberOfIterations] }
+            PAUSE_DURATION: { get_property: [SELF, pauseDuration] }
+          implementation: scripts/create.sh
+        start:
+          inputs:
+            MESSAGE: { get_property: [SELF, messageToPrint] }
+            ITERATIONS: { get_property: [SELF, numberOfIterations] }
+            PAUSE_DURATION: { get_property: [SELF, pauseDuration] }
+          implementation: scripts/iterate.sh
   org.ystia.yorc.samples.tests.AnsibleIterationComponent:
     description: |
       This component iterates on printing a message n times, sleeping a given
