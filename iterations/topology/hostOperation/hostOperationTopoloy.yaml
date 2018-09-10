@@ -35,4 +35,4 @@ topology_template:
       properties:
         messageToPrint: "Long startup component"
         numberOfIterations: 12
-        pauseDuration: 2
+        pauseDuration: 5

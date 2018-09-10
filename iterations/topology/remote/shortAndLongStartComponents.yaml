@@ -56,7 +56,7 @@ topology_template:
       properties:
         messageToPrint: "Long startup component"
         numberOfIterations: 12
-        pauseDuration: 2
+        pauseDuration: 5
       requirements:
         - hostedOnComputeInstance:
             type_requirement: host
@@ -67,8 +67,8 @@ topology_template:
       type: org.ystia.yorc.samples.tests.AnsibleIterationComponent
       properties:
         messageToPrint: "Long startup component"
-        numberOfIterations: 12
-        pauseDuration: 2
+        numberOfIterations: 10
+        pauseDuration: 1
       requirements:
         - hostedOnComputeInstance:
             type_requirement: host
