@@ -38,7 +38,7 @@ topology_template:
           properties:
             min_instances: 2
             max_instances: 2
-            default_instances: 2
+            default_instances: 1
     ShortStartupBash:
       type: org.ystia.yorc.samples.tests.BashIterationComponent
       properties:
