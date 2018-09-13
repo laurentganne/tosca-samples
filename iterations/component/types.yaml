@@ -57,6 +57,12 @@ node_types:
             ITERATIONS: { get_property: [SELF, numberOfIterations] }
             PAUSE_DURATION: { get_property: [SELF, pauseDuration] }
           implementation: scripts/iterate.sh
+      custom:
+        iterate:
+          inputs:
+            ITERATIONS: { get_property: [SELF, numberOfIterations] }
+            PAUSE_DURATION: { get_property: [SELF, pauseDuration] }
+          implementation: scripts/iterate.sh
   org.ystia.yorc.samples.tests.BashIterationHostOperation:
     description: |
       This component iterates on printing a message n times, sleeping a given
@@ -85,6 +91,12 @@ node_types:
         start:
           inputs:
             MESSAGE: { get_property: [SELF, messageToPrint] }
+            ITERATIONS: { get_property: [SELF, numberOfIterations] }
+            PAUSE_DURATION: { get_property: [SELF, pauseDuration] }
+          implementation: scripts/iterate.sh
+      custom:
+        iterate:
+          inputs:
             ITERATIONS: { get_property: [SELF, numberOfIterations] }
             PAUSE_DURATION: { get_property: [SELF, pauseDuration] }
           implementation: scripts/iterate.sh
