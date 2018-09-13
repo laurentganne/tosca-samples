@@ -42,7 +42,7 @@ topology_template:
     ShortStartupBash:
       type: org.ystia.yorc.samples.tests.BashIterationComponent
       properties:
-        messageToPrint: "Short startup component"
+        messageToPrint: "Short startup"
         numberOfIterations: 2
         pauseDuration: 1
       requirements:
@@ -54,7 +54,7 @@ topology_template:
     LongStartupBash:
       type: org.ystia.yorc.samples.tests.BashIterationComponent
       properties:
-        messageToPrint: "Long startup component"
+        messageToPrint: "Long startup"
         numberOfIterations: 12
         pauseDuration: 5
       requirements:
@@ -66,7 +66,7 @@ topology_template:
     LongStartupAnsible:
       type: org.ystia.yorc.samples.tests.AnsibleIterationComponent
       properties:
-        messageToPrint: "Long startup component"
+        messageToPrint: "Long startup"
         numberOfIterations: 10
         pauseDuration: 1
       requirements:

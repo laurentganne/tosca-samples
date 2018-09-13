@@ -33,6 +33,6 @@ topology_template:
     LongStartupBash:
       type: org.ystia.yorc.samples.tests.BashIterationHostOperation
       properties:
-        messageToPrint: "Long startup component"
+        messageToPrint: "Long startup"
         numberOfIterations: 12
         pauseDuration: 5
