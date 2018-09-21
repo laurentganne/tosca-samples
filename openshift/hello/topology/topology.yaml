@@ -1,0 +1,26 @@
+tosca_definitions_version: alien_dsl_2_0_0
+
+metadata:
+  template_name: OpenShiftHelloTopology
+  template_version: 0.1.0
+  template_author: Yorc test
+
+description: "Sample Application on OpenShift"
+
+imports:
+  - tosca-normative-types:1.0.0-ALIEN20
+  - org.ystia.yorc.samples.openshift.hello:1.0.0
+  - docker-types:2.0.0
+
+topology_template:
+  node_templates:
+    Container:
+      type: org.alien4cloud.extended.container.types.ContainerRuntime
+    Hello:
+      type: org.ystia.yorc.samples.openshift.hello.Container
+      requirements:
+        - hostedOnContainerRuntimeContainer:
+            type_requirement: host
+            node: Container
+            capability: org.alien4cloud.extended.container.capabilities.ApplicationHost
+            relationship: org.alien4cloud.extended.container.relationships.HostedOnContainerRuntime

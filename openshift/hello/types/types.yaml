@@ -1,0 +1,43 @@
+tosca_definitions_version: alien_dsl_2_0_0
+
+metadata:
+  template_name: org.ystia.yorc.samples.openshift.hello
+  template_version: 1.0.0
+  template_author: Yorc team
+
+imports:
+  - tosca-normative-types:1.0.0-ALIEN20
+  - docker-types:2.0.0
+
+description: Application serving an HTTP response Hello OpenShift
+
+repositories:
+  docker:
+    url: https://hub.docker.com/
+    type: docker
+
+node_types:
+  org.ystia.yorc.samples.openshift.hello.Container:
+    derived_from: tosca.nodes.Container.Application.DockerContainer
+    capabilities:
+      http_endpoint:
+        type: org.ystia.yorc.samples.openshift.hello.capabilities.Http
+    interfaces:
+      Standard:
+        create:
+          implementation:
+            file: openshift/hello-openshift:v3.9.0
+            repository: docker
+            type: tosca.artifacts.Deployment.Image.Container.Docker
+
+capability_types:
+  org.ystia.yorc.samples.openshift.hello.capabilities.Http:
+    derived_from: tosca.capabilities.Endpoint
+    properties:
+      docker_bridge_port_mapping:
+        type: integer
+        description: Port used to bridge to the container's endpoint.
+        default: 8080
+      port:
+        type: integer
+        default: 8080
