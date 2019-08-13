@@ -75,3 +75,10 @@ topology_template:
             node: ComputeInstance
             capability: tosca.capabilities.Container
             relationship: tosca.relationships.HostedOn
+  workflows:
+    iterate:
+      steps:
+        LongStartupAnsible_iterate:
+          target: LongStartupAnsible
+          activities:
+            - call_operation: custom.iterate
