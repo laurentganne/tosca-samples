@@ -5,7 +5,7 @@ then starting Xrv on a port provided in input.
 
 To use this Application template, you need first to add it in Alien4Cloud catalog.
 
-First, login in Alien4Cloud as a user who ans admin role or architect role.
+First, login in Alien4Cloud as a user who has the admin role or architect role.
 Once done, select Menu `Catalog` > `Manage Archives`, this page appears:
 
 ![Catalog](images/1catalog.png)
