@@ -12,7 +12,7 @@ Once done, select Menu `Catalog` > `Manage Archives`, this page appears:
 
 Click on `Git import`, this page appears where you can enter:
 * the repostiory URL: `https://github.com/laurentganne/tosca-samples`
-* the branch: `master``
+* the branch: `master`
 * the directory to import: `visualization`.
 
 ![Git Location](images/2GitLocation.png)
