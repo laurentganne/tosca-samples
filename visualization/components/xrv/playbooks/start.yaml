@@ -1,0 +1,6 @@
+- name: Start Xrv
+  hosts: all
+  strategy: free
+  tasks:
+    - name: Start Xrv
+      command: "/bin/Xrv start --bind-tcp=0.0.0.0:{{ PORT }} --start-child=\"paraview\" --html=on"

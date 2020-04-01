@@ -1,0 +1,34 @@
+- name: Uninstall packages
+  hosts: all
+  strategy: free
+  become: true
+  become_method: sudo
+  tasks:
+    - name: Ubuntu - Uninstall Xrv and paraview
+      apt:
+        name:
+          - Xrv
+          - paraview
+        state: absent
+        update_cache: yes
+      register: apt_res
+      retries: 3
+      until: apt_res is success
+      when: ansible_distribution == 'Ubuntu'
+    - name: RedHat - Uninstall Xrv and paraview
+      yum:
+        enablerepo: xrv
+        name:
+          - Xrv
+          - paraview
+        state: absent
+        update_cache: yes
+      when: ansible_os_family == 'RedHat'
+    - name: Debian - Uninstall unzip and bzip2
+      apt:
+        name:
+          - Xrv
+          - paraview
+        state: absent
+        update_cache: yes
+      when: ansible_os_family == 'Debian'

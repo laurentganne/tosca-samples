@@ -1,0 +1,48 @@
+tosca_definitions_version: alien_dsl_2_0_0
+
+metadata:
+  template_name: XrvTemplate
+  template_version: 0.1.0-SNAPSHOT
+  template_author: adminystia
+
+description: ""
+
+imports:
+  - yorc-types:1.1.0
+  - tosca-normative-types:1.0.0-ALIEN20
+  - org.atos.visualization.xrv:0.1.0
+
+topology_template:
+  inputs:
+    port:
+      type: integer
+      description: "Port to use"
+      default: 8765
+  node_templates:
+    Compute:
+      type: tosca.nodes.Compute
+      capabilities:
+        scalable:
+          properties:
+            min_instances: 1
+            max_instances: 1
+            default_instances: 1
+        endpoint:
+          properties:
+            secure: true
+            protocol: tcp
+            network_name: PRIVATE
+            initiator: source
+    Xrv:
+      type: org.atos.visualization.Xrv
+      properties:
+        port: { get_input: port }
+      requirements:
+        - hostedOnComputeHost:
+            type_requirement: host
+            node: Compute
+            capability: tosca.capabilities.Container
+            relationship: tosca.relationships.HostedOn
+  outputs:
+    Xrv_url:
+      value: { get_attribute: [ Xrv, url ] }

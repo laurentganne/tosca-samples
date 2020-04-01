@@ -1,0 +1,31 @@
+tosca_definitions_version: alien_dsl_2_0_0
+
+metadata:
+  template_name: org.atos.visualization.xrv
+  template_version: 0.1.0
+  template_author: lexis
+
+imports:
+  - tosca-normative-types:1.0.0-ALIEN20
+  - yorc-types:1.1.0
+node_types:
+  org.atos.visualization.Xrv:
+    derived_from: tosca.nodes.SoftwareComponent
+    properties:
+      port:
+        type: integer
+        description: Port to use
+    attributes:
+      url: { concat: ["http://", get_attribute: [HOST, public_ip_address], ":", get_property: [SELF, port] ] }
+    interfaces:
+      Standard:
+        create:
+          implementation: playbooks/create.yaml
+        start:
+          inputs:
+            PORT: {get_property: [SELF, port] }
+          implementation: playbooks/start.yaml
+        stop:
+          implementation: playbooks/stop.yaml
+        delete:
+          implementation: playbooks/delete.yaml

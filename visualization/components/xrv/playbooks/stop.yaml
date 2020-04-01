@@ -1,0 +1,6 @@
+- name: Stop Xrv
+  hosts: all
+  strategy: free
+  tasks:
+    - name: Stop Xrv
+      command: "/bin/Xrv stop"
