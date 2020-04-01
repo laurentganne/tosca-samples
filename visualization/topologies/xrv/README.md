@@ -1,4 +1,4 @@
-# Xrv ((eXtreme Remote Visualizer)) Application Template
+# Xrv (eXtreme Remote Visualizer) Application Template
 
 First draft of Xrv application template, installing Xrv and paraview,
 then starting Xrv on a port provided in input.
